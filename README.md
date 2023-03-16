@@ -1,9 +1,9 @@
 # \[MES\]
 
 **Group members:**
-- A Simon Andreas Rippert
-- B Marius Justus Müller
-- C Conrad Esben Lion Stein
+- Simon Andreas Rippert
+- Marius Justus Müller
+- Conrad Esben Lion Stein
 
 This repository contains  
 1. Inaugural project. 
