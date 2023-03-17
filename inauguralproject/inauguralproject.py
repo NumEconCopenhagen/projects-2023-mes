@@ -92,21 +92,79 @@ class HouseholdSpecializationModelClass:
         
         return utility - disutility
 
-    def solve_discrete(self,do_print=False):
-        """ solve model discretely """
+    #def solve_discrete(self,do_print=False):
+     #   """ solve model discretely """
         
+      #  par = self.par
+       # sol = self.sol
+        #opt = SimpleNamespace()
+        
+        # a. all possible choices
+       # x = np.linspace(0,24,49)
+        #LM,HM,LF,HF = np.meshgrid(x,x,x,x) # all combinations
+    
+     #   LM = LM.ravel() # vector
+      #  HM = HM.ravel()
+       # LF = LF.ravel()
+        #HF = HF.ravel()
+
+        # b. calculate utility
+        #u = self.calc_utility(LM,HM,LF,HF)
+
+      
+    
+        # c. set to minus infinity if constraint is broken
+       # I = (LM+HM > 24) | (LF+HF > 24) # | is "or"
+        #u[I] = -np.inf
+    
+        # d. find maximizing argument
+        #j = np.argmax(u)
+        
+     #   opt.LM = LM[j]
+      #  opt.HM = HM[j]
+       # opt.LF = LF[j]
+        #opt.HF = HF[j]
+
+        # e. print
+        #if do_print:
+         #   for k,v in opt.__dict__.items():
+          #      print(f'{k} = {v:6.4f}')
+
+        #return opt
+
+    def solve_continously(self,do_print=False):
+        """ solve model continously """
+
+        from scipy import optimize
+
         par = self.par
         sol = self.sol
         opt = SimpleNamespace()
+
+        LM = 0 # vector
+        HM = 0
+        LF = 0
+        HF = 0
+
         
-        # a. all possible choices
-        x = np.linspace(0,24,49)
-        LM,HM,LF,HF = np.meshgrid(x,x,x,x) # all combinations
+        
+        # a. all possible choices continously 
+
+        x_guess = [0, 0, 0, 0] 
+        bounds = ((0,24), (0,24), (0,24), (0,24))
+        objective_function = self.calc_utility(LM, HM, LF, HF)
+        res = optimize.minimize(objective_function, x_guess, method='Nelder-Mead', bounds=bounds)
+        opt.LM = res.x_guess[0]
+        opt.HM = res.x_guess[1]
+        opt.LF = res.x_guess[2]
+        opt.HF = res.x_guess[3]
+
+        print(LM, HM, LF, HF)
+        print(opt)
+
+        
     
-        LM = LM.ravel() # vector
-        HM = HM.ravel()
-        LF = LF.ravel()
-        HF = HF.ravel()
+    
 
         # b. calculate utility
         u = self.calc_utility(LM,HM,LF,HF)
@@ -131,11 +189,6 @@ class HouseholdSpecializationModelClass:
                 print(f'{k} = {v:6.4f}')
 
         return opt
-
-    def solve_continously(self,do_print=False):
-        """ solve model continously """
-
-        
 
         pass    
 
