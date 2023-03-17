@@ -132,8 +132,10 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-    def solve(self,do_print=False):
+    def solve_continously(self,do_print=False):
         """ solve model continously """
+
+        
 
         pass    
 
