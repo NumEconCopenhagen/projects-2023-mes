@@ -92,79 +92,21 @@ class HouseholdSpecializationModelClass:
         
         return utility - disutility
 
-    #def solve_discrete(self,do_print=False):
-     #   """ solve model discretely """
+    def solve_discrete(self,do_print=False):
+        """ solve model discretely """
         
-      #  par = self.par
-       # sol = self.sol
-        #opt = SimpleNamespace()
-        
-        # a. all possible choices
-       # x = np.linspace(0,24,49)
-        #LM,HM,LF,HF = np.meshgrid(x,x,x,x) # all combinations
-    
-     #   LM = LM.ravel() # vector
-      #  HM = HM.ravel()
-       # LF = LF.ravel()
-        #HF = HF.ravel()
-
-        # b. calculate utility
-        #u = self.calc_utility(LM,HM,LF,HF)
-
-      
-    
-        # c. set to minus infinity if constraint is broken
-       # I = (LM+HM > 24) | (LF+HF > 24) # | is "or"
-        #u[I] = -np.inf
-    
-        # d. find maximizing argument
-        #j = np.argmax(u)
-        
-     #   opt.LM = LM[j]
-      #  opt.HM = HM[j]
-       # opt.LF = LF[j]
-        #opt.HF = HF[j]
-
-        # e. print
-        #if do_print:
-         #   for k,v in opt.__dict__.items():
-          #      print(f'{k} = {v:6.4f}')
-
-        #return opt
-
-    def solve_continously(self,do_print=False):
-        """ solve model continously """
-
-        from scipy import optimize
-
         par = self.par
         sol = self.sol
         opt = SimpleNamespace()
-
-        LM = 0 # vector
-        HM = 0
-        LF = 0
-        HF = 0
-
         
-        
-        # a. all possible choices continously 
-
-        x_guess = [0, 0, 0, 0] 
-        bounds = ((0,24), (0,24), (0,24), (0,24))
-        objective_function = self.calc_utility(LM, HM, LF, HF)
-        res = optimize.minimize(objective_function, x_guess, method='Nelder-Mead', bounds=bounds)
-        opt.LM = res.x_guess[0]
-        opt.HM = res.x_guess[1]
-        opt.LF = res.x_guess[2]
-        opt.HF = res.x_guess[3]
-
-        print(LM, HM, LF, HF)
-        print(opt)
-
-        
+        # a. all possible choices
+        x = np.linspace(0,24,49)
+        LM,HM,LF,HF = np.meshgrid(x,x,x,x) # all combinations
     
-    
+        LM = LM.ravel() # vector
+        HM = HM.ravel()
+        LF = LF.ravel()
+        HF = HF.ravel()
 
         # b. calculate utility
         u = self.calc_utility(LM,HM,LF,HF)
@@ -175,7 +117,7 @@ class HouseholdSpecializationModelClass:
         I = (LM+HM > 24) | (LF+HF > 24) # | is "or"
         u[I] = -np.inf
     
-        # d. find maximizing argument
+         #d. find maximizing argument
         j = np.argmax(u)
         
         opt.LM = LM[j]
@@ -190,7 +132,53 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-        pass    
+    def solve_continuously(self, do_print=False):
+        """ solve model continuously """
+
+        from scipy import optimize
+
+        par = self.par
+        sol = self.sol
+        opt = SimpleNamespace()
+
+        LM = 0  # vector
+        HM = 0
+        LF = 0
+        HF = 0
+
+    # a. all possible choices continuously
+        x_guess = [0.5, 0.5, 0.5, 0.5]
+        bounds = ((0, 24), (0, 24), (0, 24), (0, 24))
+        objective_function = lambda x: -self.calc_utility(x[0], x[1], x[2], x[3])
+        res = optimize.minimize(objective_function, x_guess, method='Nelder-Mead', bounds=bounds)
+        opt.LM = res.x[0]
+        opt.HM = res.x[1]
+        opt.LF = res.x[2]
+        opt.HF = res.x[3]
+
+    # b. calculate utility
+        u = self.calc_utility(opt.LM, opt.HM, opt.LF, opt.HF)
+
+    # c. set to minus infinity if constraint is broken
+        I = (opt.LM + opt.HM > 24) | (opt.LF + opt.HF > 24)  # | is "or"
+        #u[I] = -np.inf
+
+    # d. find maximizing argument
+        
+    # handle the case when u has only one element
+        opt.LM = opt.LM
+        opt.HM = opt.HM
+        opt.LF = opt.LF
+        opt.HF = opt.HF
+
+    # e. print
+        if do_print:
+            for k, v in opt.__dict__.items():
+                print(f'{k} = {v:6.4f}')
+
+        return opt
+
+    pass    
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
