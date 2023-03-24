@@ -24,6 +24,7 @@ from scipy import optimize
 
 import pandas as pd 
 import matplotlib.pyplot as plt
+import math
 
 class HouseholdSpecializationModelClass:
 
@@ -91,6 +92,10 @@ class HouseholdSpecializationModelClass:
         disutility = par.nu*(TM**epsilon_/epsilon_+TF**epsilon_/epsilon_)
         
         return utility - disutility
+    
+
+    # Question 2 - discrete solver
+
 
     def solve_discrete(self,do_print=False):
         """ solve model discretely """
@@ -132,53 +137,32 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-    def solve_continuously(self, do_print=False):
-        """ solve model continuously """
+       
 
-        from scipy import optimize
+    #Question 3 - continuous solver
 
+    # create the objective function for the solver
+    def objective(self, x):
+        """ objective function to minimize """
+        LM, LF, HM, HF = x
+        return -self.calc_utility(LM, LF, HM, HF) # the minus is necessary to maximize within the minimize solver
+
+    def solve_continous(self):
+        """ solve for optimal values of LM, LF, HM, HF """
         par = self.par
         sol = self.sol
-        opt = SimpleNamespace()
 
-        LM = 0  # vector
-        HM = 0
-        LF = 0
-        HF = 0
+        # initial guess of results
+        x0 = [1, 1, 1, 1]
 
-    # a. all possible choices continuously
-        x_guess = [0.5, 0.5, 0.5, 0.5]
+        # predefine the bounds for the solutions
         bounds = ((0, 24), (0, 24), (0, 24), (0, 24))
-        objective_function = lambda x: -self.calc_utility(x[0], x[1], x[2], x[3])
-        res = optimize.minimize(objective_function, x_guess, method='Nelder-Mead', bounds=bounds)
-        opt.LM = res.x[0]
-        opt.HM = res.x[1]
-        opt.LF = res.x[2]
-        opt.HF = res.x[3]
 
-    # b. calculate utility
-        u = self.calc_utility(opt.LM, opt.HM, opt.LF, opt.HF)
+        # creating the optimization function
+        res = optimize.minimize(self.objective, x0, bounds=bounds, method = 'Nelder-Mead' )
 
-    # c. set to minus infinity if constraint is broken
-        I = (opt.LM + opt.HM > 24) | (opt.LF + opt.HF > 24)  # | is "or"
-        #u[I] = -np.inf
-
-    # d. find maximizing argument
-        
-    # handle the case when u has only one element
-        opt.LM = opt.LM
-        opt.HM = opt.HM
-        opt.LF = opt.LF
-        opt.HF = opt.HF
-
-    # e. print
-        if do_print:
-            for k, v in opt.__dict__.items():
-                print(f'{k} = {v:6.4f}')
-
-        return opt
-
-    pass    
+        # store the optimal results
+        sol.LM, sol.LF, sol.HM, sol.HF = res.x
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
@@ -195,8 +179,38 @@ class HouseholdSpecializationModelClass:
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
+
+        print("beta0: ", sol.beta0)
+        print("beta1: ", sol.beta1)
     
     def estimate(self,alpha=None,sigma=None):
         """ estimate alpha and sigma """
 
+        from scipy import optimize
+
+        par = self.par
+        sol = self.sol
+
+
+        # all possible choices
+        x_guess = [0, 0]
+        bounds = ((0,1), (0,1))
+
+        def beta(x,y):
+            #objective function to minimize
+            betas = (par.beta0_target - sol.beta0)**2 + (par.beta1_target - sol.beta1)**2
+            return betas
+        
+        def obj(x):
+            sol.beta0, sol.beta1 = x
+            return beta(sol.beta0, sol.beta1)
+        
+        res = optimize.minimize(obj, x_guess, bounds=bounds, method = "Nelder-Mead")
+        beta0opt = res.x[0]
+        beta1opt = res.x[1]
+
+        print("beta0 = ", beta0opt, "beta1 = ", beta1opt)
+        
+        
+        
         pass
