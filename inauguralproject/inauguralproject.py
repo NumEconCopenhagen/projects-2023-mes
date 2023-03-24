@@ -1,34 +1,14 @@
-def square(x):
-    """ square numpy array
-    
-    Args:
-    
-        x (ndarray): input array
-        
-    Returns:
-    
-        y (ndarray): output array
-    
-    """
-    
-    y = x**2
-    return y
-
-
-
 
 from types import SimpleNamespace
-
 import numpy as np
 from scipy import optimize
-
 import pandas as pd 
 import matplotlib.pyplot as plt
 import math
 
 class HouseholdSpecializationModelClass:
 
-    def __init__(self):
+    def _init_(self):
         """ setup model """
 
         # a. create namespaces
@@ -76,27 +56,24 @@ class HouseholdSpecializationModelClass:
         if par.sigma == 0:
             H = min(HM,HF)
         elif par.sigma == 1:
-            H = HM**(1-par.alpha)*HF**(par.alpha)
+            H = HM*(1-par.alpha)*HF*(par.alpha)
         else:
-            H = ((1-par.alpha)*HM**((par.sigma-1)/par.sigma)+par.alpha*HF**((par.sigma-1)/par.sigma))**(par.sigma/(par.sigma-1))
-    
+            H = ((1-par.alpha)HM((par.sigma-1)/par.sigma)+par.alpha*HF((par.sigma-1)/par.sigma))par.sigma/(par.sigma-1)
 
         # c. total consumption utility
-        Q = C**par.omega*H**(1-par.omega)
+        Q = C*par.omega*H*(1-par.omega)
         utility = np.fmax(Q,1e-8)**(1-par.rho)/(1-par.rho)
 
         # d. disutlity of work
         epsilon_ = 1+1/par.epsilon
         TM = LM+HM
         TF = LF+HF
-        disutility = par.nu*(TM**epsilon_/epsilon_+TF**epsilon_/epsilon_)
+        disutility = par.nu*(TM*epsilon_/epsilon_+TF*epsilon_/epsilon_)
         
         return utility - disutility
     
 
     # Question 2 - discrete solver
-
-
     def solve_discrete(self,do_print=False):
         """ solve model discretely """
         
@@ -116,8 +93,6 @@ class HouseholdSpecializationModelClass:
         # b. calculate utility
         u = self.calc_utility(LM,HM,LF,HF)
 
-      
-    
         # c. set to minus infinity if constraint is broken
         I = (LM+HM > 24) | (LF+HF > 24) # | is "or"
         u[I] = -np.inf
@@ -132,20 +107,18 @@ class HouseholdSpecializationModelClass:
 
         # e. print
         if do_print:
-            for k,v in opt.__dict__.items():
+            for k,v in opt._dict_.items():
                 print(f'{k} = {v:6.4f}')
 
         return opt
 
        
-
-    #Question 3 - continuous solver
-
+    # Question 3 - continuous solver
     # create the objective function for the solver
     def objective(self, x):
         """ objective function to minimize """
         LM, LF, HM, HF = x
-        return -self.calc_utility(LM, LF, HM, HF) # the minus is necessary to maximize within the minimize solver
+        return -self.calc_utility(LM, HM, LF, HF) # the minus is necessary to maximize within the minimize solver
 
     def solve_continous(self):
         """ solve for optimal values of LM, LF, HM, HF """
@@ -153,7 +126,7 @@ class HouseholdSpecializationModelClass:
         sol = self.sol
 
         # initial guess of results
-        x0 = [1, 1, 1, 1]
+        x0 = [10, 10, 10, 10]
 
         # predefine the bounds for the solutions
         bounds = ((0, 24), (0, 24), (0, 24), (0, 24))
@@ -162,13 +135,13 @@ class HouseholdSpecializationModelClass:
         res = optimize.minimize(self.objective, x0, bounds=bounds, method = 'Nelder-Mead' )
 
         # store the optimal results
-        sol.LM, sol.LF, sol.HM, sol.HF = res.x
+        sol.LM = res.x[0] 
+        sol.LF = res.x[1] 
+        sol.HM = res.x[2] 
+        sol.HF = res.x[3] # potentially change them in the direction of the utility function (LM, HM, LF, HF)
 
-    def solve_wF_vec(self,discrete=False):
-        """ solve model for vector of female wages """
-
-        pass
-
+    
+    # Question 4
     def run_regression(self):
         """ run regression """
 
@@ -186,11 +159,8 @@ class HouseholdSpecializationModelClass:
     def estimate(self,alpha=None,sigma=None):
         """ estimate alpha and sigma """
 
-        from scipy import optimize
-
         par = self.par
         sol = self.sol
-
 
         # all possible choices
         x_guess = [0, 0]
@@ -198,7 +168,7 @@ class HouseholdSpecializationModelClass:
 
         def beta(x,y):
             #objective function to minimize
-            betas = (par.beta0_target - sol.beta0)**2 + (par.beta1_target - sol.beta1)**2
+            betas = (par.beta0_target - sol.beta0)*2 + (par.beta1_target - sol.beta1)*2
             return betas
         
         def obj(x):
@@ -210,7 +180,5 @@ class HouseholdSpecializationModelClass:
         beta1opt = res.x[1]
 
         print("beta0 = ", beta0opt, "beta1 = ", beta1opt)
-        
-        
         
         pass
