@@ -5,6 +5,9 @@ from scipy import optimize
 import pandas as pd 
 import matplotlib.pyplot as plt
 import math
+from mpl_toolkits import mplot3d
+import scipy.interpolate as interp
+from matplotlib import cm
 
 class HouseholdSpecializationModelClass:
 
@@ -128,7 +131,7 @@ class HouseholdSpecializationModelClass:
         sol = self.sol
 
         # initial guess of results
-        x0 = [10, 10, 10, 10]
+        x0 = [10 ,10, 10, 10]
 
         # predefine the bounds for the solutions
         bounds = ((0, 24), (0, 24), (0, 24), (0, 24))
@@ -155,8 +158,7 @@ class HouseholdSpecializationModelClass:
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
 
-        print("beta0: ", sol.beta0)
-        print("beta1: ", sol.beta1)
+    
     
     def estimate(self,alpha=None,sigma=None):
         """ estimate alpha and sigma """
@@ -164,23 +166,81 @@ class HouseholdSpecializationModelClass:
         par = self.par
         sol = self.sol
 
-        # all possible choices
-        x_guess = [0, 0]
-        bounds = ((0,1), (0,1))
+        #placeholder lists used later for graphic interpretation
+        global placeholder_a
+        global placeholder_s
+        global placeholder_b
+        placeholder_a = []
+        placeholder_s = []
+        placeholder_b = []
 
-        def beta(x,y):
-            #objective function to minimize
-            betas = (par.beta0_target - sol.beta0)**2 + (par.beta1_target - sol.beta1)**2
-            return betas
-        
-        def obj(x):
-            sol.beta0, sol.beta1 = x
-            return beta(sol.beta0, sol.beta1)
-        
-        res = optimize.minimize(obj, x_guess, bounds=bounds, method = "Nelder-Mead")
-        beta0opt = res.x[0]
-        beta1opt = res.x[1]
+        # Objective Function to optimize alpha and sigma
+        def objective_function(x):
+            alpha, sigma = x
+            par.alpha = alpha
+            par.sigma = sigma
+            placeholder_HF = []
+            placeholder_HM = []
+            for wF in par.wF_vec:
+                par.wF = wF
+                self.solve_continous() 
+                placeholder_HF.append(sol.HF)
+                placeholder_HM.append(sol.HM)
+                placeholder_a.append(alpha)
+                placeholder_s.append(sigma)
+                placeholder_b.append(sol.beta0)
+            k = np.array(placeholder_HF)
+            l = np.array(placeholder_HM)
+            sol.HF_vec = k
+            sol.HM_vec = l
+            self.run_regression()
+            return (par.beta0_target - sol.beta0)**2 + (par.beta1_target - sol.beta1)**2
 
-        print("beta0 = ", beta0opt, "beta1 = ", beta1opt)
+        # Set narrow bounds for alpha and sigma
+        bounds = ((0.9, 1), (0, 0.1))
+
+        # Run the optimization
+        res = optimize.minimize(objective_function, x0=[0, 0], bounds=bounds, options={'eps':0.0001})
+
+        #store results
+        par.alpha = res.x[0]
+        par.sigma = res.x[1]
+
+    
+    def graphics_unlimited(self):
+
+        #create numpy arrays
+        X = np.array(placeholder_a)
+        Y = np.array(placeholder_s)
+        Z = np.array(placeholder_b)
+
+        #create "unlimited" figure
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(X,Y,Z)
+        ax.scatter(0.982, 0.1, 0.4, color="red")
+        ax.view_init(30, 210)
+
+        plt.show()
+
+    
+    def graphics_limited(self):
+
+        #create numpy arrays
+        X = np.array(placeholder_a)
+        Y = np.array(placeholder_s)
+        Z = np.array(placeholder_b)
+
+        #create "unlimited" figure
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(X,Y,Z)
+        ax.scatter(0.982, 0.1, 0.4, color="red")
+        ax.view_init(30, 210)
+        ax.set_zlim([0,1])
+
+        plt.show()
+
+
         
-        pass
+    
