@@ -242,5 +242,56 @@ class HouseholdSpecializationModelClass:
         plt.show()
 
 
+
+    # Question 5
+
+    def estimate_fixed_alpha(self,sigma=None,alpha=None):
+        """ estimate alpha and sigma """
+
+        par = self.par
+        sol = self.sol
+
+        #placeholder lists used later for graphic interpretation
+        #global placeholder_a
+        global placeholder_s
+        global placeholder_b
+        placeholder_a = []
+        placeholder_s = []
+        placeholder_b = []
+
+        # Objective Function to optimize alpha and sigma
+        def objective_function(x):
+            alpha, sigma = x
+            par.alpha = alpha
+            par.sigma = sigma
+            placeholder_HF = []
+            placeholder_HM = []
+            for wF in par.wF_vec:
+                par.wF = wF
+                self.solve_continous() 
+                placeholder_HF.append(sol.HF)
+                placeholder_HM.append(sol.HM)
+                placeholder_a.append(alpha)
+                placeholder_s.append(sigma)
+                placeholder_b.append(sol.beta0)
+            k = np.array(placeholder_HF)
+            l = np.array(placeholder_HM)
+            sol.HF_vec = k
+            sol.HM_vec = l
+            self.run_regression()
+            return (par.beta0_target - sol.beta0)**2 + (par.beta1_target - sol.beta1)**2
+
+        # Set narrow bounds for alpha and sigma
+        bounds = ((0.5, 0.5), (0.4, 1))
+
+        # Run the optimization
+        res = optimize.minimize(objective_function, x0=[0, 0], bounds=bounds, options={'eps':0.0001})
+
+        #store results
+        par.alpha = res.x[0]
+        par.sigma = res.x[1]
+        
+
+
         
     
