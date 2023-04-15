@@ -53,42 +53,6 @@ def plot(self):
     cmap=seaborn.color_palette("rocket_r", as_cmap=True),
     )
 
-def interactive_plot(self):
-
-    fig, ax = plt.subplots()
-    line, = ax.plot([], [])
-
-    geomerged = gpd.GeoDataFrame(merged2)
-
-    geomerged.plot(
-    ax=ax,
-    alpha=0.7,
-    column=column,
-    linewidth=0.1,
-    edgecolor="#555",
-    categorical=False,
-    legend=True,
-        # cmap="autumn_r",
-        # This is a key decision here. Lovely background info:
-        # https://seaborn.pydata.org/tutorial/color_palettes.html
-        # Use a sequential one.
-    cmap=seaborn.color_palette("rocket_r", as_cmap=True),
-    )
-
-    # create a slider for selecting columns
-    slider = IntSlider(min=min1, max=len(geomerged.columns)-1, step=1, value=1, description='Column:')
-
-    def update_plot(column):
-        line.set_data(geomerged['x'], geomerged[geomerged.columns[column]])
-        ax.set_title(geomerged.columns[column])
-        fig.canvas.draw()
-
-    # create an interactive widget with the slider and the update function
-    interact(update_plot, column=slider)
-
-    # show the plot
-    plt.show()
-
 
 def interactive_plot1(self):
 
