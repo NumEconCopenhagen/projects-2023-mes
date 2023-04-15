@@ -32,9 +32,12 @@ def keep_regs(df, regs):
 
 
     
-def plot(self):
+def plot(self, ax=None):
+    
+    if ax is None:
+        fig, ax = plt.subplots()
 
-    fig, ax = plt.subplots()
+    #fig, ax = plt.subplots()
 
     geomerged = gpd.GeoDataFrame(merged2)
 
