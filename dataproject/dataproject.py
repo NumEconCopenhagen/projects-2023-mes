@@ -4,8 +4,9 @@ import pandas as pd
 import geopandas as gpd
 from ipywidgets import interact, IntSlider
 
+#set default variables
 global ratio
-ratio = "ratio_65year"
+ratio = ""
 global column
 column = ""
 merged2 = pd.DataFrame()
@@ -31,13 +32,11 @@ def keep_regs(df, regs):
     return df
 
 
-    
+ #plot for manual columns   
 def plot(self, ax=None):
     
     if ax is None:
         fig, ax = plt.subplots()
-
-    #fig, ax = plt.subplots()
 
     geomerged = gpd.GeoDataFrame(merged2)
 
@@ -49,14 +48,11 @@ def plot(self, ax=None):
     edgecolor="#555",
     categorical=False,
     legend=True,
-        # cmap="autumn_r",
-        # This is a key decision here. Lovely background info:
-        # https://seaborn.pydata.org/tutorial/color_palettes.html
-        # Use a sequential one.
     cmap=seaborn.color_palette("rocket_r", as_cmap=True),
     )
 
 
+#plot with sliders
 def interactive_plot1(self):
 
     geomerged = gpd.GeoDataFrame(merged2)
@@ -71,8 +67,6 @@ def interactive_plot1(self):
         ax.set_title(geomerged.columns[column])
 
         # update the plot using the selected column
-        #print("update_plot called")  # check if function is being called
-        #print(column)
         print("column:", geomerged.columns[column])
         ax.clear()
         geomerged.plot(
