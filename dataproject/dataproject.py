@@ -32,7 +32,8 @@ def keep_regs(df, regs):
     return df
 
 
- #plot for manual columns   
+#plot for manual columns 
+#shoutout to https://github.com/jgehrcke/covid-19-germany-gae for plotting German counties  
 def plot(self, ax=None):
     
     if ax is None:
