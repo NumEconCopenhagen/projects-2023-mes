@@ -10,6 +10,8 @@ global column
 column = ""
 merged2 = pd.DataFrame()
 dfK_new1 = pd.DataFrame()
+min1 = 0
+max1 = 10
 
 def keep_regs(df, regs):
     """ Example function. Keep only the subset regs of regions in data.
@@ -74,7 +76,7 @@ def interactive_plot(self):
     )
 
     # create a slider for selecting columns
-    slider = IntSlider(min=1, max=len(geomerged.columns)-1, step=1, value=1, description='Column:')
+    slider = IntSlider(min=min1, max=len(geomerged.columns)-1, step=1, value=1, description='Column:')
 
     def update_plot(column):
         line.set_data(geomerged['x'], geomerged[geomerged.columns[column]])
@@ -93,7 +95,7 @@ def interactive_plot1(self):
     geomerged = gpd.GeoDataFrame(merged2)
 
     # create a slider for selecting columns
-    slider = IntSlider(min=1, max=len(geomerged.columns)-1, step=1, value=1, description='Column:')
+    slider = IntSlider(min=min1, max=max1, step=1, value=1, description='Column:')
 
     def update_plot(column):
 
