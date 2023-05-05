@@ -66,11 +66,12 @@ class RicardianModelClass:
         y1_values = np.linspace(-2, 2, num=101)
         y2_values_d = ppf_d(y1_values)
         y2_values_g = ppf_g(y1_values)
-        plt.plot(y1_values, y2_values_d)
-        plt.plot(y1_values, y2_values_g)
+        plt.plot(y1_values, y2_values_d, label = "Denmark")
+        plt.plot(y1_values, y2_values_g, label = "Germany")
         plt.xlabel('Output of sector 1')
         plt.ylabel('Output of sector 2')
         plt.title('Production Possibility Frontier')
+        plt.legend()
         plt.show()
 
 
