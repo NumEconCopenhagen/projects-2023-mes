@@ -100,8 +100,8 @@ class RicardianModelClass:
 
     
 
-    def lagrangian(self, U, I):
+    def lagrangian(self, , I):
         # Define symbols
         c1, c2, p, I = sm.symbols('c1 c2 p I', positive=True)
         # Define the utility function
-        U = self.utility
+        self.utility
