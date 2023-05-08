@@ -129,24 +129,7 @@ class RicardianModelClass:
         return p_opt, c1_opt, c2_opt
     
 
-    def find_equilibrium_price(self, a, L, w, y1, y2, epsilon):
-        p = symbols('p')
-        
-        c1 = self.production_function(a[0], L[0])
-        c2 = self.production_function(a[1], L[1])
-        
-        demand_c1 = self.utility(c1, c2, epsilon)
-        demand_c2 = self.utility(c2, c1, epsilon)
-        
-        supply_c1 = self.income_cons(p, c1, c2)
-        supply_c2 = self.income_cons(p, c2, c1)
-        
-        eq1 = Eq(demand_c1, supply_c1)
-        eq2 = Eq(demand_c2, supply_c2)
-        
-        equilibrium_price = solve((eq1, eq2), (p,))
-        
-        return equilibrium_price[0]
+    
 
 
     
