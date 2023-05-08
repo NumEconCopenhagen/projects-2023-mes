@@ -97,11 +97,37 @@ class RicardianModelClass:
 
     def income_alt(self, p, y1, y2):
         return p * y1 + y2
+    
+    def income_cons(self, p, c1, c2):
+        return p * c1 + c2
 
     
 
-    def lagrangian(self, , I):
+    def lagrangian(self, U, I):
         # Define symbols
-        c1, c2, p, I = sm.symbols('c1 c2 p I', positive=True)
-        # Define the utility function
-        self.utility
+        c1, c2, p, I, epsilon = sm.symbols('c1 c2 p I epsilon', positive=True)
+        # Use the utility function
+        U = self.utility(c1, c2, epsilon)
+        # Use budeget constraint
+        I = self.income_cons(p, c1, c2)
+        # Define the Lagrangian function
+        L = U + sm.Symbol('lambda')*I
+        # Calculate the first-order conditions
+        foc_c1 = sm.diff(L, c1)
+        foc_c2 = sm.diff(L, c2)
+        foc_lambda = sm.diff(L, sm.Symbol('lambda'))
+
+        # Solve the first-order conditions for c1 and lambda
+        sol = sm.solve([foc_c1, foc_lambda, foc_c2], [c1, c2, sm.Symbol('lambda')])
+         # Extract the optimal values of c1 and lambda from the solution
+        c1_opt = sol[c1]
+        c2_opt = sol[c2]
+        # Solve for the optimal price
+        p_opt = sm.solve(sm.Eq(I, p*(c1_opt[c1] + c2_opt[c2])), p)
+        # Return the optimal price and the optimal value of c1
+        return p_opt, c1_opt, c2_opt
+    
+
+
+    
+    
