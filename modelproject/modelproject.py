@@ -2,65 +2,62 @@ from scipy import optimize
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class RicardianModelClass:
     
 
     def __init__(self):
+
+        #default inputs of productivity for Denmark and Germany
         a1_d = 4
         a2_d = 8
         a1_g = 10
         a2_g = 3
 
-    def ricardian_ppf_Denmark(self, a1_d, a2_d):
-        """
-        Returns a production possibility set (PPF) in the setting of a Ricardian model of international trade.
+        #default labor shares in Denmark and Germany
+        L1_d = 0.5
+        L2_d = 0.5
+        L_d = 1
+        L1_g = 0.7
+        L2_g = 0.3
+        L_g = 1
 
-        Returns:
-        - ppf: function of the form y2 = a2*L - (a2/a1)*y1, where y1 and y2 are the output levels of the first and second sectors, respectively, and L is the fixed amount of labor available in the economy.
-        """
+        #default wages (guesses)
+        w_d_initial = 1
+        w_g_initial = 1
+        w_d = 1
+        w_g = 1
+
+        #default consumption guesses
+        c1_d = 1
+        c2_d = 1
+        c1_g = 1
+        c2_g = 1
+
+
+
+    def ricardian_ppf_Denmark(self, a1_d, a2_d, L_d):
+        #production possibility set for Denmark
         def ppf_Denmark(y1):
-            """
-            Computes the maximum output level of the second sector (y2) given a certain output level of the first sector (y1), subject to the constraint that all available labor is used.
-
-            Arguments:
-            - y1: float, output level of the first sector.
-
-            Returns:
-            - y2: float, maximum output level of the second sector given y1.
-            """
-            L = 1.0  # fixed amount of labor
-            y2 = a2_d*L - (a2_d/a1_d)*y1
+            #calculates maximum y2 for a given y1, a1, a2, labor fixed at 1
+            y2 = a2_d*L_d - (a2_d/a1_d)*y1
             return y2 if y2 >= 0 else 0.0  # ensure non-negative output level of the second sector
 
         return np.vectorize(ppf_Denmark)  # return a vectorized version of ppf
     
-    def ricardian_ppf_Germany(self, a1_g, a2_g):
-        """
-        Returns a production possibility set (PPF) in the setting of a Ricardian model of international trade.
-
-        Returns:
-        - ppf: function of the form y2 = a2*L - (a2/a1)*y1, where y1 and y2 are the output levels of the first and second sectors, respectively, and L is the fixed amount of labor available in the economy.
-        """
+    def ricardian_ppf_Germany(self, a1_g, a2_g, L_d):
+        #production possibility set for Germany
         def ppf_Germany(y1):
-            """
-            Computes the maximum output level of the second sector (y2) given a certain output level of the first sector (y1), subject to the constraint that all available labor is used.
-
-            Arguments:
-            - y1: float, output level of the first sector.
-
-            Returns:
-            - y2: float, maximum output level of the second sector given y1.
-            """
-            L = 1.0  # fixed amount of labor
-            y2 = a2_g*L - (a2_g/a1_g)*y1
+            #calculates maximum y2 for a given y1, a1, a2, labor fixed at 1
+            y2 = a2_g*L_d - (a2_g/a1_g)*y1
             return y2 if y2 >= 0 else 0.0  # ensure non-negative output level of the second sector
 
         return np.vectorize(ppf_Germany)  # return a vectorized version of ppf
 
-    def plot_ppf(self, a1_d, a2_d, a1_g, a2_g):
+    def plot_ppf(self, a1_d, a2_d, a1_g, a2_g, L_d, L_g):
 
-        ppf_d = self.ricardian_ppf_Denmark(a1_d, a2_d)
-        ppf_g = self.ricardian_ppf_Germany(a1_g, a2_g)
+        ppf_d = self.ricardian_ppf_Denmark(a1_d, a2_d, L_d)
+        ppf_g = self.ricardian_ppf_Germany(a1_g, a2_g, L_g)
 
         # Plot the PPF curve
         y1_values = np.linspace(-2, 2, num=101)
@@ -73,5 +70,34 @@ class RicardianModelClass:
         plt.title('Production Possibility Frontier')
         plt.legend()
         plt.show()
+
+
+    #production function
+
+    def production_function(self, a, L):
+        return a * L
+    
+    #utility function
+
+    def utility(self, c1, c2, epsilon):
+        numerator = epsilon - 1
+        denominator = epsilon
+        term1 = c1 ** (numerator / denominator)
+        term2 = c2 ** (numerator / denominator)
+        inner_expression = term1 + term2
+        utility_value = inner_expression ** (numerator / denominator)
+        return utility_value
+    
+
+    #income contraints
+    
+    def income(self, w, L):
+        return w * L
+
+    def income_alt(self, p, y1, y2):
+        return p * y1 + y2
+
+    
+
 
 
