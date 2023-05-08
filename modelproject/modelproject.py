@@ -1,5 +1,6 @@
 from scipy import optimize
 import numpy as np
+import sympy as sm 
 import matplotlib.pyplot as plt
 
 
@@ -99,5 +100,8 @@ class RicardianModelClass:
 
     
 
-
-
+    def lagrangian(self, U, I):
+        # Define symbols
+        c1, c2, p, I = sm.symbols('c1 c2 p I', positive=True)
+        # Define the utility function
+        U = self.utility
