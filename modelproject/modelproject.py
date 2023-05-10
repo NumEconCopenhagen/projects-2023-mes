@@ -3,6 +3,8 @@ import numpy as np
 import sympy as sm 
 import matplotlib.pyplot as plt
 from sympy import symbols, Eq, solve
+import ipywidgets as widgets
+from IPython.display import display
 
 
 class RicardianModelClass:
@@ -39,21 +41,29 @@ class RicardianModelClass:
             return y2
         return np.vectorize(ppf)
 
-    def plot_ppf(self, a1_d, a2_d, a1_g, a2_g, L_d, L_g):
 
-        ppf_d = self.ricardian_ppf(a1_d, a2_d, L_d)
-        ppf_g = self.ricardian_ppf(a1_g, a2_g, L_g)
+    def ppf_plot(self, a1_d, a2_d, a1_g, a2_g):
+        # points in German ppf
+        x1 = [a1_g, 0]  
+        y1 = [0, a2_g]  
 
-        # Plot the PPF curve
-        y1_values = np.linspace(-2, 2, num=101)
-        y2_values_d = ppf_d(y1_values)
-        y2_values_g = ppf_g(y1_values)
-        plt.plot(y1_values, y2_values_d, label = "Denmark")
-        plt.plot(y1_values, y2_values_g, label = "Germany")
-        plt.xlabel('Output of sector 1')
-        plt.ylabel('Output of sector 2')
-        plt.title('Production Possibility Frontier')
+        # points in Danish ppf
+        x2 = [a1_d, 0]  
+        y2 = [0, a2_d]  
+
+        # Plotting the lines
+        plt.plot(x1, y1, label='Germany')
+        plt.plot(x2, y2, label='Denmark')
+
+        # Adding labels and title
+        plt.xlabel('Beer')
+        plt.ylabel('Pharmaceuticals')
+        plt.title('PPFs')
+
+        # Adding a legend
         plt.legend()
+
+        # Displaying the plot
         plt.show()
 
 
