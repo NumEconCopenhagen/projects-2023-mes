@@ -1,4 +1,4 @@
-from scipy import optimize
+from scipy.optimize import minimize
 import numpy as np
 import sympy as sm 
 import matplotlib.pyplot as plt
@@ -74,14 +74,31 @@ class RicardianModelClass:
     
     #utility function
 
-    def utility(self, c1, c2, epsilon):
-        numerator = epsilon - 1
-        denominator = epsilon
-        term1 = c1 ** (numerator / denominator)
-        term2 = c2 ** (numerator / denominator)
-        inner_expression = term1 + term2
-        utility_value = inner_expression ** (numerator / denominator)
-        return utility_value
+    def utility(self, x, alpha):
+        c1, c2 = x
+        return c1**alpha * c2**(1-alpha)
+    
+    #ppf constraint
+    
+    def constraint(self, x, a1, a2):
+        """Production Possibility Frontier constraint function"""
+        c1, c2 = x
+        return c2-a1+(a2/a1)*c1
+    
+    def optimize_autarky(self, alpha, a1, a2):
+        # Initial guess for x
+        x0 = [1, 1]
+
+        # Bounds for x
+        bounds = [(0, None), (0, None)]
+
+        # Constraint definition
+        cons = ({'type': 'eq', 'fun': self.constraint, 'args': (a1, a2)})
+
+        # Optimization function
+        res = minimize(lambda x: -self.utility(x, alpha), x0, bounds=bounds, constraints=cons)
+
+        return res.x
     
 
     #income contraints
