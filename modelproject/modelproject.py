@@ -98,7 +98,7 @@ class RicardianModelClass:
         # Optimization function
         res = minimize(lambda x: -self.utility(x, alpha), x0, bounds=bounds, constraints=cons)
 
-        return res.x
+        return res.x * (a2/a1)
     
 
     #income contraints
