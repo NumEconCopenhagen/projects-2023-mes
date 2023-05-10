@@ -74,13 +74,16 @@ class RicardianModelClass:
     
     #utility function
 
+    def utility_func(self, c1, c2, alpha):
+        return c1**alpha * c2**(1-alpha)
+
     def utility(self, x, alpha):
         c1, c2 = x
         return c1**alpha * c2**(1-alpha)
     
     #ppf constraint
     
-    def constraint(self, x, a1, a2):
+    def constraint_autarky(self, x, a1, a2):
         """Production Possibility Frontier constraint function"""
         c1, c2 = x
         return c2-a1+(a2/a1)*c1
@@ -93,12 +96,13 @@ class RicardianModelClass:
         bounds = [(0, None), (0, None)]
 
         # Constraint definition
-        cons = ({'type': 'eq', 'fun': self.constraint, 'args': (a1, a2)})
+        cons = ({'type': 'eq', 'fun': self.constraint_autarky, 'args': (a1, a2)})
 
         # Optimization function
         res = minimize(lambda x: -self.utility(x, alpha), x0, bounds=bounds, constraints=cons)
 
         return res.x * (a2/a1)
+     
     
 
     #income contraints
