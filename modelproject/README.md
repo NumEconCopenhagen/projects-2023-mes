@@ -1,6 +1,8 @@
 # Model analysis project
 
-Our project is titled **PROJECT TITLE** and is about EXPLAIN.
+Members: Marius Müller, Esben Stein, Simon Rippert
+
+Our project is titled **Ricardian Model of Trade** and is about analising trade flows of two distinct countries.
 
 The **results** of the project can be seen from running [modelproject.ipynb](modelproject.ipynb).
 
