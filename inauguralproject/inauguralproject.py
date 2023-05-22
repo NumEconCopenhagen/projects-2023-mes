@@ -1,4 +1,4 @@
-
+# Include all the required packages
 from types import SimpleNamespace
 import numpy as np
 from scipy import optimize
@@ -20,26 +20,26 @@ class HouseholdSpecializationModelClass:
         par = self.par = SimpleNamespace()
         sol = self.sol = SimpleNamespace()
 
-        # b. preferences
+        # b. preferences (parameters)
         par.rho = 2.0
         par.nu = 0.001
         par.epsilon = 1.0
         par.omega = 0.5 
 
-        # c. household production
+        # c. household production (parameters)
         par.alpha = 0.5
         par.sigma = 1
 
-        # d. wages
-        par.wM = 1.0
-        par.wF = 1.0
-        par.wF_vec = np.linspace(0.8,1.2,5)
+        # d. wages for male and female
+        par.wM = 1.0 
+        par.wF = 1.0 
+        par.wF_vec = np.linspace(0.8,1.2,5) # varying female wages
 
-        # e. targets
+        # e. targets for beta
         par.beta0_target = 0.4
         par.beta1_target = -0.1
 
-        # f. solution
+        # f. unpack the (empty) solution
         sol.LM_vec = np.zeros(par.wF_vec.size)
         sol.HM_vec = np.zeros(par.wF_vec.size)
         sol.LF_vec = np.zeros(par.wF_vec.size)
@@ -49,7 +49,7 @@ class HouseholdSpecializationModelClass:
         sol.beta1 = np.nan
 
     def calc_utility(self,LM,HM,LF,HF):
-        """ calculate utility """
+        """ calculate utility function """
 
         par = self.par
         sol = self.sol
@@ -75,6 +75,7 @@ class HouseholdSpecializationModelClass:
         TF = LF+HF
         disutility = par.nu*(TM**epsilon_/epsilon_+TF**epsilon_/epsilon_)
         
+        # e. Total utility
         return utility - disutility
     
 
