@@ -78,6 +78,33 @@ class HouseholdSpecializationModelClass:
         # e. Total utility
         return utility - disutility
     
+    def plot_line(self, a, b):
+        # D. Create a Figure
+        # D.1 Plot the optimal ratios
+        plt.plot(a, b, 'o--', label='Data Points')
+
+
+        # D.2 Create heading, axis labels and legend
+        plt.title('Exploring the Link Between Household Work and Gender Wage Disparity', fontsize=16)
+        plt.xlabel('log(wF/wM)', fontsize=12)
+        plt.ylabel('log(HF/HM)', fontsize=12)
+        plt.legend()
+
+
+        # D.3 Remove black box around the plot
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
+
+
+        # D.4 Add data point values to the plot
+        for i, (x, y) in enumerate(zip(a, b)):
+            wf_value = par.wF_vec[i]
+            plt.text(x, y, f'wF = {wf_value}', ha='left', va='bottom')
+
+
+        # D.5 Show the plot
+        plt.show()
+    
 
     # Question 2 - discrete solver
     def solve_discrete(self,do_print=False):
