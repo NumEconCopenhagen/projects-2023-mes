@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 from ipywidgets import interact, IntSlider
+from ipywidgets import interact, Dropdown
 
 #set default variables
 global ratio
@@ -40,6 +41,7 @@ def plot(self, ax=None):
         fig, ax = plt.subplots()
 
     geomerged = gpd.GeoDataFrame(merged2)
+    geomerged = geomerged.set_geometry('geometry')  # Set the active geometry column
 
     geomerged.plot(
     ax=ax,
