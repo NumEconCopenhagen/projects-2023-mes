@@ -70,21 +70,30 @@ def interactive_plot1(self):
 
         fig, ax = plt.subplots()
         line, = ax.plot([], [])
-        ax.set_title(geomerged.columns[column])
+        column_name = geomerged.columns[column]
+        ax.set_title(f"Column: {column_name}")
 
         # update the plot using the selected column
-        print("column:", geomerged.columns[column])
+        print(column_name)
         ax.clear()
         geomerged.plot(
             ax=ax,
             alpha=0.7,
-            column=geomerged.columns[column],
+            column=column_name,
             linewidth=0.1,
             edgecolor="#555",
             categorical=False,
             legend=True,
             cmap=seaborn.color_palette("rocket_r", as_cmap=True),
         )
+
+
+        # Increase font size of the print statement
+        plt.rcParams.update({'font.size': 10})
+
+        # Add a legend
+        legend_label = "Darker Color indicates Higher Ratio"
+        fig.legend([legend_label], loc="lower center", bbox_to_anchor=(0.5, -0.1))
 
         fig.canvas.draw()
 

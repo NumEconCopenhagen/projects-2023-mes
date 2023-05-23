@@ -1,6 +1,6 @@
 # Data analysis project
 
-members: 
+Members: 
 Marius Müller
 Esben Stein
 Simon Rippert
