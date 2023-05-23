@@ -1,3 +1,4 @@
+# Import the necessary packages
 import seaborn
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -5,7 +6,8 @@ import geopandas as gpd
 from ipywidgets import interact, IntSlider
 from ipywidgets import interact, Dropdown
 
-#set default variables
+
+# set default variables
 global ratio
 ratio = ""
 global column
@@ -14,6 +16,7 @@ merged2 = pd.DataFrame()
 dfK_new1 = pd.DataFrame()
 min1 = 0
 max1 = 10
+
 
 def keep_regs(df, regs):
     """ Example function. Keep only the subset regs of regions in data.
