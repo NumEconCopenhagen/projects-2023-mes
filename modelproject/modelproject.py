@@ -9,62 +9,98 @@ from IPython.display import display
 
 class RicardianModelClass:
 
-    # Definition of the PPF
-    def ricardian_ppf(self, a1, a2, L):
-        def ppf(y1):
-            y2 = a2*L - (a2/a1)*y1
-            return y2
-        return np.vectorize(ppf)
 
-    # Plots both PPFs (1st Plot)
+    # Autarky: Plotting both PPFs in one Graph
     def ppf_plot(self, a1_d, a2_d, a1_g, a2_g):
-        # points in German ppf
+
+        # A. points in German ppf
         x1 = [a1_g, 0]  
         y1 = [0, a2_g]  
 
-        # points in Danish ppf
+        # B. points in Danish ppf
         x2 = [a1_d, 0]  
         y2 = [0, a2_d]  
 
-        # Plotting the lines
+        # C. Plotting the lines
         plt.plot(x1, y1, label='Germany')
         plt.plot(x2, y2, label='Denmark')
 
-        # Adding labels and title
+        # D. Adding labels and title
         plt.xlabel('Beer')
         plt.ylabel('Pharmaceuticals')
         plt.title('PPFs')
         plt.xlim(0, 10)
         plt.ylim(0, 10)
 
-        # Adding a legend
+        # E. Adding a legend
         plt.legend()
 
-        # Displaying the plot
+        # F. Displaying the plot
         plt.show()
 
-    # Plots each PPF individually
+
+    # Autarky: Solver for the optimal consumption
+    
+    # A. Utility function solver
+    def utility_func(self, c1, c2, alpha):
+        return c1**alpha * c2**(1-alpha)
+
+    # B. Utility function to calculate utility after optimal consumption is derived
+    def utility(self, x, alpha):
+        c1, c2 = x
+        return c1**alpha * c2**(1-alpha)
+    
+    # C. PPF constraint
+    def constraint_autarky(self, x, a1, a2):
+        """Production Possibility Frontier constraint function"""
+        c1, c2 = x
+        return c2-a1+(a2/a1)*c1
+    
+    # D. Definition of the optimizer
+    def optimize_autarky(self, alpha, a1, a2):
+
+        # D.1 Initial guess for x
+        x0 = [1, 1]
+
+        # D.2 Bounds for x
+        bounds = [(0, None), (0, None)]
+
+        # D.3 Constraint definition
+        cons = ({'type': 'eq', 'fun': self.constraint_autarky, 'args': (a1, a2)})
+
+        # D.4 Optimization function
+        res = minimize(lambda x: -self.utility(x, alpha), x0, bounds=bounds, constraints=cons)
+
+        return res.x * (a2/a1)
+
+
+    # Autarky: Plot PPF individually
+    # A. Definition of plot
     def ppf_plot_individual(self, a1, a2, optimal_c1, optimal_c2):
         
+        # B. Generate x1 values
         y1 = np.linspace(0, 10)
 
-        # calculate corresponding values of y2 using the given equation
+        # C. Calculate corresponding y-values according to PPF
         y2 = a2 - (a2/a1)*y1
 
+        # D. Plot the PPF
         plt.plot(y1, y2)
 
-        # Adding labels and title
+        # E. Adding labels and title
         plt.xlabel('Beer')
         plt.ylabel('Pharmaceuticals')
         plt.title('PPFs')
         plt.xlim(0, 10)
         plt.ylim(0, 10)
 
-        # Adding optimal consumption bundle
+        # F. Adding optimal consumption bundle
         plt.scatter(optimal_c1, optimal_c2, color='red')
 
-        # Displaying the plot
+        # G. Displaying the plot
         plt.show()
+
+
 
     # Plots both PPFs with optimal points in autarky and trade
     def ppf_plot_trade(self, a1_d, a2_d, a1_g, a2_g):
